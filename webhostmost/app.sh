@@ -70,9 +70,10 @@ curl -fsSL https://raw.githubusercontent.com/jpus/test/main/webhostmost/app.js -
 curl -fsSL https://raw.githubusercontent.com/jpus/test/main/webhostmost/package.json -o package.json
 npm install
 
-print_info "所有操作已完成!"
+print_info "安装已完成!"
 
 rm -f /home/$username/.npm/_logs/*.log
-rm -rf /home/$username/.bash_history
-print_info "清除文件已完成!"
 curl -f "https://$domain/" > ~/nodejs.log
+rm -f /home/$username/nodejs.log
+rm -f /home/$username/.bash_history
+print_info "所有操作已完成!"
