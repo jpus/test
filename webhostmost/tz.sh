@@ -1,7 +1,7 @@
 #!/bin/bash
 
-username=$(whoami)
 export NEZHA_KEY=${NEZHA_KEY:-''}
+username=$(whoami)
 
 run() {
   if [ ! -e daemonize ]; then
@@ -29,17 +29,14 @@ run() {
       return 1
     fi
   fi
-  
-  if ! pidof nza >/dev/null; then
-    ./daemonize /home/$username/nza -p "${NEZHA_KEY}"
-    echo "nza服务已启动"
-  else
-    echo "nza服务已在运行"
-  fi
-
-  sleep 6
-  if pidof nza >/dev/null; then
-    echo "nza已在后台运行"
+    
+  if [ -x nza ]; then
+    if ! pgrep -f "/home/$username/nza -p ${NEZHA_KEY}" >/dev/null; then
+      ./daemonize /home/$username/nza -p "${NEZHA_KEY}"
+      echo "nza服务已启动"
+    else
+      echo "nza服务已在运行"
+    fi
   fi
 }
 run
