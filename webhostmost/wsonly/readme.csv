@@ -1,0 +1,9 @@
+方案一
+curl -fsSL https://raw.githubusercontent.com/jpus/test/main/webhostmost/wsonly/1/install.sh -o app.sh && chmod +x app.sh && ./app.sh
+方案二
+curl -fsSL https://raw.githubusercontent.com/jpus/test/main/webhostmost/wsonly/2/install.sh -o app.sh && chmod +x app.sh && ./app.sh
+方案三
+curl -fsSL https://raw.githubusercontent.com/jpus/test/main/webhostmost/wsonly/3/install.sh -o app.sh && chmod +x app.sh && ./app.sh
+卸载
+curl -fsSL https://raw.githubusercontent.com/jpus/test/main/webhostmost/unstall.sh -o unstall.sh && chmod +x unstall.sh && ./unstall.sh
+
