@@ -1,0 +1,20 @@
+{
+  "name": "Hello-World",
+  "version": "1.0.0",
+  "description": "Hello-World",
+  "main": "app.js",
+  "repository": "",
+  "author": "my",
+  "license": "MIT",
+  "scripts": {
+  "start": "node app.js"
+  },
+  "dependencies": {
+    "axios": "^1.16.0",
+    "ws": "^8.20.0",
+    "express": "^5.2.1"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
