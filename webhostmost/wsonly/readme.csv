@@ -15,3 +15,15 @@ ssh server6的用户名@server6.webhostmost.com -p 2323
 ssh server7的用户名@server7.webhostmost.com -p 2323
 ssh server8的用户名@server8.webhostmost.com -p 2323
 
+编译screen：
+wget https://ftp.gnu.org/gnu/screen/screen-5.0.1.tar.gz
+tar xvf screen-5.0.1.tar.gz
+cd screen-5.0.1
+./configure
+make
+
+编译daemonize：
+git clone https://github.com/bmc/daemonize
+cd daemonize
+./configure
+make
