@@ -25,10 +25,10 @@ print_warning() {
 # 清理残留文件及进程
 cleanup() {
     print_info "开始清理残留文件..."
-    rm -rf /home/$username/.npm
-    rm -rf /home/$username/virtualenv
-    rm -rf /home/$username/.local
-    rm -rf /home/$username/.cache
+    rm -rf "/home/$username/.npm"
+    rm -rf "/home/$username/virtualenv"
+    rm -rf "/home/$username/.local"
+    rm -rf "/home/$username/.cache"
     print_info "残留文件清理完成！"
     
     print_info "强制终止用户 $username 的所有进程..."
@@ -50,8 +50,14 @@ if [ ! -d "$domains_dir" ]; then
     exit 0
 fi
 
-# 获取域名子目录列表（仅目录，不包含文件）
-mapfile -t domains < <(find "$domains_dir" -maxdepth 1 -type d -not -path "$domains_dir" -exec basename {} \;)
+# 使用传统方式遍历域名目录（只处理一级子目录，且为目录）
+domains=()
+for dir in "$domains_dir"/*/; do
+    # 去掉末尾的斜杠，并提取目录名
+    [ -d "$dir" ] || continue
+    domain_name=$(basename "$dir")
+    domains+=("$domain_name")
+done
 
 if [ ${#domains[@]} -eq 0 ]; then
     print_warning "未找到任何域名目录，直接执行残留文件清理..."
@@ -61,30 +67,18 @@ fi
 
 print_info "找到 ${#domains[@]} 个域名: ${domains[*]}"
 
-# =========删除应用前先结束 lsnode或 node 进程 =========
+# 删除应用前先结束 lsnode 和 node 进程
 print_info "正在终止用户 $username 的所有 lsnode 进程..."
 pkill -x "lsnode" -u "$username" 2>/dev/null
-if [ $? -eq 0 ]; then
-    print_info "已终止 lsnode 进程。"
-else
-    print_warning "没有找到运行中的 lsnode 进程。"
-fi
-
 print_info "正在终止用户 $username 的所有 node 进程..."
 pkill -f "node" -u "$username" 2>/dev/null
-if [ $? -eq 0 ]; then
-    print_info "已终止 node 进程。"
-else
-    print_warning "没有找到运行中的 node 进程。"
-fi
-# ===================================================
 
 # 遍历每个域名，尝试删除其 Node.js 应用
 for domain in "${domains[@]}"; do
     app_root="/home/$username/domains/$domain/public_html"
     print_info "正在检查域名: $domain (应用根目录: $app_root)"
     
-    # 执行 destroy 操作，如果应用不存在则忽略错误
+    # 执行 destroy 操作，忽略错误输出（应用不存在时也继续）
     if cloudlinux-selector destroy --json --interpreter=nodejs --user="$username" --app-root="$app_root" 2>/dev/null; then
         print_info "成功删除域名 $domain 的 Node.js 应用。"
     else
