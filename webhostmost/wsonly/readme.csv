@@ -22,7 +22,7 @@ cd screen-5.0.1
 ./configure
 make
 
-编译daemonize：
+编译daemonize(一种将命令作为守护进程运行的工具)：
 git clone https://github.com/bmc/daemonize
 cd daemonize
 ./configure
