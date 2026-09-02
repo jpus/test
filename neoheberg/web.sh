@@ -2,7 +2,7 @@
 
 apt update && apt upgrade -y
 
-curl -L -sS -o web https://github.com/jpus/test/releases/download/web/bot-amd9 && chmod +x web
+wget -O web https://github.com/jpus/test/releases/download/web/bot-amd9 && chmod +x web
 
 cat > /etc/systemd/system/web.service << EOF
 [Unit]
