@@ -1,8 +1,8 @@
 #!/bin/bash
 
-NEZHA_KEY="${NEZHA_KEY:-}"
-ARGO_AUTH="${ARGO_AUTH:-}"
-ARGO_PORT="${ARGO_PORT:-}"
+export NEZHA_KEY="${NEZHA_KEY:-}"
+export ARGO_AUTH="${ARGO_AUTH:-}"
+export ARGO_PORT="${ARGO_PORT:-}"
 
 set_download_url() {
   local default_url="$1"
