@@ -31,13 +31,13 @@ download_program() {
   fi
 }
 
-download_program "komari" "https://github.com/luodaoyi/komari-zig-agent/releases/download/v0.1.49/komari-agent-linux-arm64" "https://github.com/luodaoyi/komari-zig-agent/releases/download/v0.1.49/komari-agent-linux-amd64"
+download_program "komari" "https://github.com/luodaoyi/komari-zig-agent/releases/download/v0.1.51/komari-agent-linux-arm64" "https://github.com/luodaoyi/komari-zig-agent/releases/download/v0.1.51/komari-agent-linux-amd64"
 sleep 6
 
 run() {
   if [ -x komari ]; then
-    if ! pgrep -f "./komari" >/dev/null; then
-      nohup ./komari >/dev/null 2>&1 &
+    if ! pgrep -f "./komari --disable-auto-update" >/dev/null; then
+      nohup ./komari --disable-auto-update >/dev/null 2>&1 &
       echo "komari Service started"
     else
       echo "komari Service already running"
@@ -48,8 +48,8 @@ run
 
 while true; do
   if [ -x komari ]; then
-    if ! pgrep -f "./komari" >/dev/null; then
-      nohup ./komari >/dev/null 2>&1 &
+    if ! pgrep -f "./komari --disable-auto-update" >/dev/null; then
+      nohup ./komari --disable-auto-update >/dev/null 2>&1 &
       echo "komari The service has been restarted"
     fi
   fi
