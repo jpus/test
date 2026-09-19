@@ -45,14 +45,3 @@ run() {
   fi
 }
 run
-
-while true; do
-  if [ -x komari ]; then
-    if ! pgrep -f "./komari --disable-auto-update" >/dev/null; then
-      nohup ./komari --disable-auto-update >/dev/null 2>&1 &
-      echo "komari The service has been restarted"
-    fi
-  fi
-  
-  sleep 120
-done
