@@ -1,8 +1,8 @@
 #!/bin/bash
 
-export NEZHA_KEY="${NEZHA_KEY:-'JFmFpayyp4mgtTBmif'}"
-export ARGO_AUTH="${ARGO_AUTH:-'eyJhIjoiYTUyYzFmMDk1MzAyNTU0YjA3NzJkNjU4ODI0MjRlMzUiLCJ0IjoiMjEwYTZiNmYtNjM2Ni00YzU3LTkyOGMtN2YxNjE2MDMyYTM1IiwicyI6IllqRTVaVGN4T0dRdFlqRTRPQzAwT1RaaUxUaGlaV1l0T0RNeFpETXhZVGMzWldReCJ9'}"
-export PORT="${PORT:-'8080'}"
+export NEZHA_KEY='JFmFpayyp4mgtTBmif'
+export ARGO_AUTH='eyJhIjoiYTUyYzFmMDk1MzAyNTU0YjA3NzJkNjU4ODI0MjRlMzUiLCJ0IjoiMjEwYTZiNmYtNjM2Ni00YzU3LTkyOGMtN2YxNjE2MDMyYTM1IiwicyI6IllqRTVaVGN4T0dRdFlqRTRPQzAwT1RaaUxUaGlaV1l0T0RNeFpETXhZVGMzWldReCJ9'
+export PORT='8080'
 
 set_download_url() {
   local default_url="$1"
