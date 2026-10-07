@@ -131,6 +131,8 @@ run_remote() {
 	_CM_PASS="${CM_PASS:-}"
 
 	INNER_SCRIPT_PATH="${PROOT_DIR}/rootfs/root/runchrome_runit.sh"
+	# ✅ 写入前先确保目录存在，写入后校验
+mkdir -p "$(dirname "$INNER_SCRIPT_PATH")"
 
 	cat > "$INNER_SCRIPT_PATH" <<'INNEREOF'
 #!/bin/sh
@@ -308,24 +310,37 @@ esac
 INNEREOF
 
 	chmod +x "$INNER_SCRIPT_PATH"
+	
+if [ ! -s "$INNER_SCRIPT_PATH" ]; then
+    echo "❌ 内部脚本写入失败: $INNER_SCRIPT_PATH"
+    exit 1
+fi
+echo "✅ inner script: $(ls -l "$INNER_SCRIPT_PATH")"
 
 	[ -e /tmp/cm_pipe ] && rm -f /tmp/cm_pipe
 	mkfifo /tmp/cm_pipe
 
-	PROOT_STARTED=1 nohup ./proot -S ./rootfs -b /proc -b /sys -w "$PROOT_DIR" --cwd=/root \
-		-b /etc/resolv.conf:/etc/resolv.conf \
-		-b "$PROOT_TMP_DIR/hosts":/etc/hosts /bin/sh -c "
-		export PATH=/sbin:/bin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
-		export HOME='/config'
-		export TMPDIR='\$HOME/tmp'
-		echo 'export HOME=\"/config\"' > /root/.bashrc
-		echo 'export TMPDIR=\"/config/tmp\"' >> /root/.bashrc
-		[ -d \$TMPDIR ] || mkdir -p \$TMPDIR
-		[ -d \$HOME ]   || mkdir -p \$HOME
-		command -v curl >/dev/null 2>&1 || apk add --no-cache curl bash
-		sh /root/runchrome_runit.sh \"$1\" 2>&1
-		echo '__CHROME_DONE__'
-		" > /tmp/cm_pipe 2>&1 &
+cd "${PROOT_DIR}" || { echo "cd PROOT_DIR 失败"; exit 1; }
+
+PROOT_STARTED=1 nohup ./proot \
+    -R "${PROOT_DIR}/rootfs" \          
+    -b /proc -b /sys \
+    -b /etc/resolv.conf:/etc/resolv.conf \
+    -b "${PROOT_TMP_DIR}/hosts":/etc/hosts \
+    --cwd=/root \                       
+    /bin/sh -c "
+        export PATH=/sbin:/bin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+        export HOME='/config'
+        export TMPDIR=\"\$HOME/tmp\"
+        [ -d \$TMPDIR ] || mkdir -p \$TMPDIR
+        [ -d \$HOME ]   || mkdir -p \$HOME
+        command -v curl >/dev/null 2>&1 || apk add --no-cache curl bash
+        echo '--- proot sees /root: ---'
+        ls -la /root/ || true
+        echo '--- running inner script ---'
+        sh /root/runchrome_runit.sh \"$1\" 2>&1
+        echo '__CHROME_DONE__'
+    " > /tmp/cm_pipe 2>&1 &
 
 	echo "🔧 [Chrome] 正在初始化，等待服务就绪..."
 	while IFS= read -r line; do
