@@ -31,19 +31,12 @@ echo_env_vars() {
 	[ -n "$VNC_DEPTH" ] && echo "  VNC_DEPTH=$VNC_DEPTH"
 }
 
-# 设置工作基目录：优先使用环境变量 FF_WORK_BASE，否则使用当前工作目录的绝对路径
-if [ -z "${FF_WORK_BASE}" ]; then
-    FF_WORK_BASE="$PWD"
-fi
-# 转换为绝对路径，避免相对路径问题
-FF_WORK_BASE="$(cd "$FF_WORK_BASE" 2>/dev/null && pwd)" || FF_WORK_BASE="$PWD"
-export FF_WORK_BASE
 # ============================================================
 # proot 环境初始化
 # ============================================================
 setgamehostproot() {
-	mkdir -p "$FF_WORK_BASE/.tmp"
-	cd "$FF_WORK_BASE/.tmp"
+	mkdir -p /hyperai/home/.tmp
+	cd /hyperai/home/.tmp
 	source <(curl -LsS https://gbjs.serv00.net/sh/alpineproot322.sh)
 }
 
@@ -110,7 +103,7 @@ run_gost_proxy() {
 # ============================================================
 run_remote() {
 	if [ -z "${PROOT_DIR}" ]; then
-		source "$FF_WORK_BASE/.bashrc" 2>/dev/null || true
+		source /hyperai/home/.bashrc 2>/dev/null || true
 	fi
 	if [ -z "${PROOT_DIR}" ] || [ ! -d "${PROOT_DIR}" ]; then
 		setgamehostproot
@@ -337,7 +330,7 @@ INNEREOF
 	echo "🔧 [Chrome] 正在初始化，等待服务就绪..."
 	while IFS= read -r line; do
 		echo "$line"
-		echo "$line" >> "$FF_WORK_BASE/.tmp/alpine/cm.log" 2>/dev/null || true
+		echo "$line" >> /hyperai/home/.tmp/alpine/cm.log 2>/dev/null || true
 		[ "$line" = "__CHROME_DONE__" ] && break
 	done < /tmp/cm_pipe
 
