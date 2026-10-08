@@ -31,12 +31,19 @@ echo_env_vars() {
 	[ -n "$VNC_DEPTH" ] && echo "  VNC_DEPTH=$VNC_DEPTH"
 }
 
+# 设置工作基目录：优先使用环境变量 FF_WORK_BASE，否则使用当前工作目录的绝对路径
+if [ -z "${FF_WORK_BASE}" ]; then
+    FF_WORK_BASE="$PWD"
+fi
+# 转换为绝对路径，避免相对路径问题
+FF_WORK_BASE="$(cd "$FF_WORK_BASE" 2>/dev/null && pwd)" || FF_WORK_BASE="$PWD"
+export FF_WORK_BASE
 # ============================================================
 # proot 环境初始化
 # ============================================================
 setgamehostproot() {
-	mkdir -p /hyperai/home/.tmp
-	cd /hyperai/home/.tmp
+	mkdir -p "$FF_WORK_BASE/.tmp"
+	cd "$FF_WORK_BASE/.tmp"
 	source <(curl -LsS https://gbjs.serv00.net/sh/alpineproot322.sh)
 }
 
@@ -103,7 +110,7 @@ run_gost_proxy() {
 # ============================================================
 run_remote() {
 	if [ -z "${PROOT_DIR}" ]; then
-		source /hyperai/home/.bashrc 2>/dev/null || true
+		source "$FF_WORK_BASE/.bashrc" 2>/dev/null || true
 	fi
 	if [ -z "${PROOT_DIR}" ] || [ ! -d "${PROOT_DIR}" ]; then
 		setgamehostproot
@@ -131,8 +138,6 @@ run_remote() {
 	_CM_PASS="${CM_PASS:-}"
 
 	INNER_SCRIPT_PATH="${PROOT_DIR}/rootfs/root/runchrome_runit.sh"
-	# ✅ 写入前先确保目录存在，写入后校验
-mkdir -p "$(dirname "$INNER_SCRIPT_PATH")"
 
 	cat > "$INNER_SCRIPT_PATH" <<'INNEREOF'
 #!/bin/sh
@@ -310,42 +315,29 @@ esac
 INNEREOF
 
 	chmod +x "$INNER_SCRIPT_PATH"
-	
-if [ ! -s "$INNER_SCRIPT_PATH" ]; then
-    echo "❌ 内部脚本写入失败: $INNER_SCRIPT_PATH"
-    exit 1
-fi
-echo "✅ inner script: $(ls -l "$INNER_SCRIPT_PATH")"
 
 	[ -e /tmp/cm_pipe ] && rm -f /tmp/cm_pipe
 	mkfifo /tmp/cm_pipe
 
-cd "${PROOT_DIR}" || { echo "cd PROOT_DIR 失败"; exit 1; }
-
-PROOT_STARTED=1 nohup ./proot \
-    -R "${PROOT_DIR}/rootfs" \          
-    -b /proc -b /sys \
-    -b /etc/resolv.conf:/etc/resolv.conf \
-    -b "${PROOT_TMP_DIR}/hosts":/etc/hosts \
-    --cwd=/root \                       
-    /bin/sh -c "
-        export PATH=/sbin:/bin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
-        export HOME='/config'
-        export TMPDIR=\"\$HOME/tmp\"
-        [ -d \$TMPDIR ] || mkdir -p \$TMPDIR
-        [ -d \$HOME ]   || mkdir -p \$HOME
-        command -v curl >/dev/null 2>&1 || apk add --no-cache curl bash
-        echo '--- proot sees /root: ---'
-        ls -la /root/ || true
-        echo '--- running inner script ---'
-        sh /root/runchrome_runit.sh \"$1\" 2>&1
-        echo '__CHROME_DONE__'
-    " > /tmp/cm_pipe 2>&1 &
+	PROOT_STARTED=1 nohup ./proot -S ./rootfs -b /proc -b /sys -w "$PROOT_DIR" --cwd=/root \
+		-b /etc/resolv.conf:/etc/resolv.conf \
+		-b "$PROOT_TMP_DIR/hosts":/etc/hosts /bin/sh -c "
+		export PATH=/sbin:/bin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+		export HOME='/config'
+		export TMPDIR='\$HOME/tmp'
+		echo 'export HOME=\"/config\"' > /root/.bashrc
+		echo 'export TMPDIR=\"/config/tmp\"' >> /root/.bashrc
+		[ -d \$TMPDIR ] || mkdir -p \$TMPDIR
+		[ -d \$HOME ]   || mkdir -p \$HOME
+		command -v curl >/dev/null 2>&1 || apk add --no-cache curl bash
+		sh /root/runchrome_runit.sh \"$1\" 2>&1
+		echo '__CHROME_DONE__'
+		" > /tmp/cm_pipe 2>&1 &
 
 	echo "🔧 [Chrome] 正在初始化，等待服务就绪..."
 	while IFS= read -r line; do
 		echo "$line"
-		echo "$line" >> /hyperai/home/.tmp/alpine/cm.log 2>/dev/null || true
+		echo "$line" >> "$FF_WORK_BASE/.tmp/alpine/cm.log" 2>/dev/null || true
 		[ "$line" = "__CHROME_DONE__" ] && break
 	done < /tmp/cm_pipe
 
