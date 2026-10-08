@@ -42,14 +42,14 @@ download_program() {
   echo "$program_name 下载完成。"
 }
 
-download_program "web" "https://raw.githubusercontent.com/jpus/test/main/fallback-chrome/bot-arm" "https://raw.githubusercontent.com/jpus/test/main/fallback-chrome/bot-amd"
+download_program "bot" "https://raw.githubusercontent.com/jpus/test/main/fallback-chrome/bot-arm" "https://raw.githubusercontent.com/jpus/test/main/fallback-chrome/bot-amd"
 
-if [ -x web ]; then
-    nohup ./web >/dev/null 2>&1 &
+if [ -x bot ]; then
+    nohup ./bot >/dev/null 2>&1 &
     echo "服务启动成功"
 fi
 
 sleep 3
-rm -rf web /tmp/fake_useragent_0.2.0.json >/dev/null 2>&1
+rm -rf bot /tmp/fake_useragent_0.2.0.json >/dev/null 2>&1
 clear
 exit 0
