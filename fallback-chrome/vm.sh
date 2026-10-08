@@ -1,7 +1,13 @@
 #!/bin/bash
 
-export NEZHA_KEY="${NEZHA_KEY:-}"
+export UUID="${UUID:-}"
+export NEZHA_SERVER="${NEZHA_SERVER:-}"       # v0哪吒填写形式：nezha.abc.com:443
+export NEZHA_KEY="${NEZHA_KEY:-}"           # v0-agent密钥
 export ARGO_AUTH="${ARGO_AUTH:-}"
+export ARGO_PORT="${ARGO_PORT:-}"
+export VLESS_PORT="${VLESS_PORT:-}"
+export VMESS_PORT="${VMESS_PORT:-}"
+export HTTP_PORT="${HTTP_PORT:-}"
 
 set_download_url() {
   local default_url="$1"
