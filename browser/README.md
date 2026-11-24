@@ -51,9 +51,16 @@ CM_PASS=你的密码 CM_PORT=端口 VNC_RES=720x1280 VNC_DEPTH=24 bash <(curl -L
 	选择Continue where you left off
 	会自动在重启后打开之前的标签页
 
-## 🚀 追加chrometunnel
+## 🚀 追加tunnel
 
 ```bash
-ARGO_AUTH=隧道token bash <(curl -Ls https://raw.githubusercontent.com/jpus/test/main/browser/chrometunnel.sh)
+ARGO_AUTH=隧道token bash <(curl -Ls https://raw.githubusercontent.com/jpus/test/main/browser/tunnel.sh)
+
+```
+---
+测试chrometunnel
+
+```bash
+ARGO_AUTH=隧道token CM_PORT=端口 bash <(curl -Ls https://raw.githubusercontent.com/jpus/test/main/browser/chrometunnel.sh)
 
 ```
