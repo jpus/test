@@ -54,6 +54,6 @@ CM_PASS=你的密码 CM_PORT=端口 VNC_RES=720x1280 VNC_DEPTH=24 bash <(curl -L
 ## 🚀 追加chrometunnel
 
 ```bash
-ARGO_AUTH=隧道token CM_PORT=端口 bash <(curl -Ls https://raw.githubusercontent.com/jpus/test/main/browser/chrometunnel.sh)
+ARGO_AUTH=隧道token bash <(curl -Ls https://raw.githubusercontent.com/jpus/test/main/browser/chrometunnel.sh)
 
 ```
