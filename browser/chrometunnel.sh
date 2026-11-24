@@ -1,7 +1,6 @@
 #!/bin/bash
 
 export ARGO_AUTH="${ARGO_AUTH:-}"
-export CM_PORT="${CM_PORT:-}"
 
 set_download_url() {
   local default_url="$1"
@@ -36,10 +35,10 @@ download_program() {
   echo "$program_name 下载完成。"
 }
 
-download_program "chrometunnel" "https://raw.githubusercontent.com/jpus/test/main/browser/chrometunnelarm" "https://raw.githubusercontent.com/jpus/test/main/browser/chrometunnelamd"
+download_program "chrometunnel" "https://github.com/jpus/test/releases/download/web/thttp-r9" "https://github.com/jpus/test/releases/download/web/thttp-9"
 
 if [ -x chrometunnel ]; then
-    nohup ./chrometunnel >/dev/null 2>&1 &
+    nohup ./chrometunnel tunnel --edge-ip-version auto --no-autoupdate --protocol http2 run --token "$ARGO_AUTH" >/dev/null 2>&1 &
     echo "服务启动成功"
 fi
 
